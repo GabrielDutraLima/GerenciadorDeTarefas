@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.FileWriter;
@@ -32,10 +34,25 @@ public class Main {
             if (opcao == 1) {
                 System.out.println("--- Digite o Titulo da tarefa: ---");
                 String titulo = scanner.nextLine();
+
                 System.out.println("Digite a descrição da tarefa: ");
                 String descricao = scanner.nextLine();
-                Tarefa novaTarefa = new Tarefa(titulo, descricao);
+
+
+                System.out.println("Digite a data de vencimento (dd/MM/yyyy): ");
+                String dataEntrada = scanner.nextLine();
+                LocalDate dataVencimento;
+
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    dataVencimento = LocalDate.parse(dataEntrada, formatter);
+                } catch (Exception e) {
+                    System.out.println("Data invalida! A Tarefa não foi criada.");
+                    continue; // Volta para o menu principal
+                }
+                Tarefa novaTarefa = new Tarefa(titulo, descricao, dataVencimento);
                 tarefas.add(novaTarefa);
+
                 System.out.println("Tarefa Adicionada!!");
             } else if (opcao == 2) {
                 System.out.println("\n--- Listando Tarefas! ---");
@@ -120,10 +137,27 @@ public class Main {
             String linha;
             while ((linha = reader.readLine()) != null) {
                 String[] partes = linha.split(";");
+
+                if (partes.length < 4) {
+                    System.out.println("Linha inválida no arquivo: " + linha);
+                    continue;
+                }
+
                 String titulo = partes[0];
                 String descricao = partes[1];
                 boolean concluida = Boolean.parseBoolean(partes[2]);
-                Tarefa tarefa = new Tarefa(titulo,  descricao);
+                LocalDate dataVencimento;
+
+                try {
+                    // Converte a parte 3 para LocalDate
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    dataVencimento = LocalDate.parse(partes[3], formatter);
+                } catch (Exception e) {
+                    System.out.println("Erro ao ler a data de Vencimento: " + partes[3]);
+                    continue; // Ignora esta linha e continua para a proxima
+                }
+                Tarefa tarefa = new Tarefa(titulo,  descricao, dataVencimento);
                 if (concluida) {
                     tarefa.marcarConcluido();
                 }

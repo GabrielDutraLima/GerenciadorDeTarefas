@@ -1,14 +1,23 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 
 public class Tarefa {
     private String titulo;
     private String descricao;
     private boolean concluido;
+    private LocalDate dataVencimento;
 
     // contrutor
-    public Tarefa(String titulo, String descricao) {
+    public Tarefa(String titulo, String descricao, LocalDate dataVencimento) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.concluido = false;
+        this.dataVencimento = dataVencimento;
+    }
+
+    public LocalDate getDataVencimento() {
+        return dataVencimento;
     }
 
     public String getTitulo() {
@@ -30,6 +39,7 @@ public class Tarefa {
     @Override
     public String toString() {
         String status = concluido ? "Concluida" : "Pendente";
-        return "Título: " + titulo + ", Descrição: " + descricao + " [" + status + "]";
+        String dataFormatada = dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return "Título: " + titulo + ", Descrição: " + descricao + "Vencimento: " + dataFormatada + " [" + status + "]";
     }
 }
