@@ -11,6 +11,14 @@ public class Tarefa {
         this.concluido = false;
     }
 
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
     public void marcarConcluido() {
         this.concluido = true;
     }

@@ -1,5 +1,12 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.FileWriter;
+
+
+
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -7,6 +14,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in); // Ler as entradas do usuário
         ArrayList<Tarefa> tarefas = new ArrayList<>();
+        carregarTarefas(tarefas);
         int opcao = -1;
 
         while (opcao != 0) {
@@ -85,6 +93,7 @@ public class Main {
                     }
                 }
             } else if (opcao == 0) {
+                salvarTarefas(tarefas);
                 System.out.println("--- Saindo do Gerenciador de Tarefas ---");
             } else {
                 System.out.println("Opção invalida !!!");
@@ -93,6 +102,37 @@ public class Main {
         }
 
         scanner.close();
+    }
+
+    public static void salvarTarefas(ArrayList<Tarefa> tarefas) {
+        try (FileWriter writer = new FileWriter("tarefas.txt")) {
+            for (Tarefa tarefa : tarefas) {
+                writer.write(tarefa.getTitulo() + ";" + tarefa.getDescricao() + ";" + tarefa.isConcluido() + "\n");
+            }
+            System.out.println("Tarefas salvas com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar tarefas: " + e.getMessage());
+        }
+    }
+
+    public static void carregarTarefas(ArrayList<Tarefa> tarefas) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("tarefas.txt"))){
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] partes = linha.split(";");
+                String titulo = partes[0];
+                String descricao = partes[1];
+                boolean concluida = Boolean.parseBoolean(partes[2]);
+                Tarefa tarefa = new Tarefa(titulo,  descricao);
+                if (concluida) {
+                    tarefa.marcarConcluido();
+                }
+                tarefas.add(tarefa);
+            }
+            System.out.println("Tarefa carregadas com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar tarefas: " + e.getMessage());
+        }
     }
 }
 
