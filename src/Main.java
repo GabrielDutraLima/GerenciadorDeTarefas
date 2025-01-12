@@ -14,6 +14,7 @@ public class Main {
             System.out.println("1. Adicionar Tarefa");
             System.out.println("2. Listar Tarefas");
             System.out.println("3. Remover Tarefa");
+            System.out.println("4. Marcar como Concluída");
             System.out.println("0. Sair");
             System.out.println("Escolha uma opção: ");
 
@@ -60,13 +61,52 @@ public class Main {
                         System.out.println("Numero Invalido !!");
                     }
                 }
+
+
+            } else if (opcao == 4) {
+                System.out.println("--- Marcar Tarefa como Concluida ---");
+                if (tarefas.isEmpty()) {
+                    System.out.println("Tarefa não encontrada");
+                } else {
+                    System.out.println("Tarefas disponiveis:");
+                    for (int i = 0; i < tarefas.size(); i++) {
+                        System.out.println((i +1) + ". " + tarefas.get(i));
+
+                    }
+
+                    System.out.println("Escolha a tarefa para marcar como conclida: ");
+                    int numero = scanner.nextInt();
+
+                    if (numero > 0 && numero <= tarefas.size()) {
+                        tarefas.get(numero - 1).marcarConcluido();
+                        System.out.println("Tarefa Concluída!");
+                    } else {
+                        System.out.println("Numero inválido. Por favor, tente novamente.");
+                    }
+                }
             } else if (opcao == 0) {
                 System.out.println("--- Saindo do Gerenciador de Tarefas ---");
             } else {
                 System.out.println("Opção invalida !!!");
             }
+
         }
 
         scanner.close();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
