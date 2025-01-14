@@ -28,12 +28,13 @@ public class Main {
             System.out.println("2. Listar Tarefas");
             System.out.println("3. Remover Tarefa");
             System.out.println("4. Marcar como Concluída");
+            System.out.println("5. Filtrar Tarefas por Status");
             System.out.println("0. Sair");
             System.out.println("Escolha uma opção: ");
 
             opcao = scanner.nextInt();
             scanner.nextLine();
-
+            //=====================1===============================
             if (opcao == 1) {
                 System.out.println("--- Digite o Titulo da tarefa: ---");
                 String titulo = scanner.nextLine();
@@ -57,6 +58,8 @@ public class Main {
                 tarefas.add(novaTarefa);
 
                 System.out.println("Tarefa Adicionada!!");
+
+                //=====================2===============================
             } else if (opcao == 2) {
                 System.out.println("\n--- Listando Tarefas! ---");
                 if (tarefas.isEmpty()) {
@@ -67,6 +70,8 @@ public class Main {
                         System.out.println((i + 1) + ". " + tarefas.get(i));
                     }
                 }
+
+                //=====================3===============================
             } else if (opcao == 3) {
                 System.out.println("\n--- Remover Tarefa! ---");
                 if (tarefas.isEmpty()) {
@@ -91,7 +96,7 @@ public class Main {
                     }
                 }
 
-
+                //=====================4===============================
             } else if (opcao == 4) {
                 System.out.println("--- Marcar Tarefa como Concluida ---");
                 if (tarefas.isEmpty()) {
@@ -99,7 +104,7 @@ public class Main {
                 } else {
                     System.out.println("Tarefas disponiveis:");
                     for (int i = 0; i < tarefas.size(); i++) {
-                        System.out.println((i +1) + ". " + tarefas.get(i));
+                        System.out.println((i + 1) + ". " + tarefas.get(i));
 
                     }
 
@@ -111,18 +116,49 @@ public class Main {
                         System.out.println("Tarefa Concluída!");
                     } else {
                         System.out.println("Numero inválido. Por favor, tente novamente.");
+
                     }
                 }
-            } else if (opcao == 0) {
+
+            } else if (opcao == 5) {
+                System.out.println("\n--- Filtrar Tarefas ---");
+                System.out.println("1. Mostrar apenas tarefas pendentes");
+                System.out.println("2. Mostrar apenas tarefas concluidas");
+                System.out.print("Escolha uma opção: ");
+
+                int filtro = scanner.nextInt();
+                //scanner.nextInt();  usado para consumir a quebra de linha
+
+                if (filtro == 1) {
+                    System.out.println("\n--- Tarefas Pendentes ---");
+                    for (Tarefa tarefa : tarefas) {
+                        if (!tarefa.isConcluido()) {
+                            System.out.println(tarefa);
+                        }
+                    }
+                } else if (filtro == 2) {
+                    System.out.println("\n--- Tarefas Concluídas ---");
+                    for (Tarefa tarefa : tarefas) {
+                        if (!tarefa.isConcluido()) {
+                            System.out.println(tarefa);
+                        }
+                    }
+
+                }else {
+                    System.out.println("Opção inválida!");
+                }
+
+            }else if (opcao == 0) {
                 salvarTarefas(tarefas);
                 System.out.println("--- Saindo do Gerenciador de Tarefas ---");
             } else {
                 System.out.println("Opção invalida !!!");
             }
 
+
         }
 
-        scanner.close();
+            scanner.close();
     }
 
     public static void salvarTarefas(ArrayList<Tarefa> tarefas) {
