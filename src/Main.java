@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
 import java.io.FileWriter;
 
@@ -17,6 +19,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in); // Ler as entradas do usuário
         ArrayList<Tarefa> tarefas = new ArrayList<>();
         carregarTarefas(tarefas);
+        Collections.sort(tarefas);
         int opcao = -1;
 
         while (opcao != 0) {
@@ -59,6 +62,7 @@ public class Main {
                 if (tarefas.isEmpty()) {
                     System.out.println("Nenhuma tarefa registrada.");
                 } else {
+                    Collections.sort(tarefas);
                     for (int i = 0; i < tarefas.size(); i++) {
                         System.out.println((i + 1) + ". " + tarefas.get(i));
                     }

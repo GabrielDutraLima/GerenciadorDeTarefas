@@ -1,8 +1,10 @@
+import com.sun.source.tree.ReturnTree;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
-public class Tarefa {
+public class Tarefa implements Comparable<Tarefa> {
     private String titulo;
     private String descricao;
     private boolean concluido;
@@ -41,5 +43,10 @@ public class Tarefa {
         String status = concluido ? "Concluida" : "Pendente";
         String dataFormatada = dataVencimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         return "Título: " + titulo + ", Descrição: " + descricao + "Vencimento: " + dataFormatada + " [" + status + "]";
+    }
+
+    @Override
+    public int compareTo(Tarefa outra) {
+        return this.dataVencimento.compareTo(outra.dataVencimento);
     }
 }
