@@ -1,8 +1,5 @@
-import com.sun.source.tree.ReturnTree;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 
 public class Tarefa implements Comparable<Tarefa> {
     private String titulo;
@@ -59,5 +56,4 @@ public class Tarefa implements Comparable<Tarefa> {
         }
         return prioridadeComparacao;
     }
-
 }

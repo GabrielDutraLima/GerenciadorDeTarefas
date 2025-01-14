@@ -9,11 +9,6 @@ import java.util.Collections;
 import java.util.Scanner;
 import java.io.FileWriter;
 
-
-
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in); // Ler as entradas do usuário
@@ -26,7 +21,6 @@ public class Main {
             exibirMenu();
             opcao = scanner.nextInt();
             scanner.nextLine(); // Consumi o enter extra
-
 
             switch (opcao) {
                 case 1 -> adicionarTarefa(scanner, tarefas);
@@ -45,8 +39,6 @@ public class Main {
         scanner.close();
 
         }
-
-    //}
 
     public static void salvarTarefas(ArrayList<Tarefa> tarefas) {
         try (FileWriter writer = new FileWriter("tarefas.txt")) {
@@ -228,9 +220,6 @@ public class Main {
             System.out.println("Opção inválida!");
         }
     }
-
-
-
 
 }
 
