@@ -51,7 +51,9 @@ public class Main {
     public static void salvarTarefas(ArrayList<Tarefa> tarefas) {
         try (FileWriter writer = new FileWriter("tarefas.txt")) {
             for (Tarefa tarefa : tarefas) {
-                writer.write(tarefa.getTitulo() + ";" + tarefa.getDescricao() + ";" + tarefa.isConcluido() + "\n");
+                writer.write(tarefa.getTitulo() + ";" + tarefa.getDescricao() + ";" +
+                        tarefa.isConcluido() + ";" + tarefa.getDataVencimento() + ";" +
+                        tarefa.getPrioridade() + "\n");
             }
             System.out.println("Tarefas salvas com sucesso!");
         } catch (IOException e) {
@@ -65,7 +67,7 @@ public class Main {
             while ((linha = reader.readLine()) != null) {
                 String[] partes = linha.split(";");
 
-                if (partes.length < 4) {
+                if (partes.length < 5) {
                     System.out.println("Linha inválida no arquivo: " + linha);
                     continue;
                 }
@@ -74,17 +76,17 @@ public class Main {
                 String descricao = partes[1];
                 boolean concluida = Boolean.parseBoolean(partes[2]);
                 LocalDate dataVencimento;
+                String prioridade = partes[4];
 
                 try {
                     // Converte a parte 3 para LocalDate
-
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     dataVencimento = LocalDate.parse(partes[3], formatter);
                 } catch (Exception e) {
                     System.out.println("Erro ao ler a data de Vencimento: " + partes[3]);
                     continue; // Ignora esta linha e continua para a proxima
                 }
-                Tarefa tarefa = new Tarefa(titulo, descricao, dataVencimento);
+                Tarefa tarefa = new Tarefa(titulo, descricao, dataVencimento, prioridade);
                 if (concluida) {
                     tarefa.marcarConcluido();
                 }
@@ -111,6 +113,13 @@ public class Main {
         System.out.println("--- Digite o Titulo da tarefa: ---");
         String titulo = scanner.nextLine();
 
+        System.out.println("Escolha a prioridade da tarefa (baixa, média, alta): )");
+        String prioridade = scanner.nextLine().toLowerCase();
+        if (!prioridade.equals("baixa") && !prioridade.equals("média") && !prioridade.equals("alta")) {
+            System.out.println("Prioridade inválida. Tafera não foi criada.");
+            return;
+        }
+
         System.out.println("Digite a descrição da tarefa: ");
         String descricao = scanner.nextLine();
 
@@ -122,7 +131,7 @@ public class Main {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             dataVencimento = LocalDate.parse(dataEntrada, formatter);
-            Tarefa novaTarefa = new Tarefa(titulo, descricao, dataVencimento);
+            Tarefa novaTarefa = new Tarefa(titulo, descricao, dataVencimento, prioridade);
             tarefas.add(novaTarefa);
             System.out.println("Tarefa Adicionada!");
         } catch (Exception e) {
@@ -219,6 +228,10 @@ public class Main {
             System.out.println("Opção inválida!");
         }
     }
+
+
+
+
 }
 
 

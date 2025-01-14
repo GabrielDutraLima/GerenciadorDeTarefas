@@ -9,13 +9,15 @@ public class Tarefa implements Comparable<Tarefa> {
     private String descricao;
     private boolean concluido;
     private LocalDate dataVencimento;
+    private String prioridade;
 
     // contrutor
-    public Tarefa(String titulo, String descricao, LocalDate dataVencimento) {
+    public Tarefa(String titulo, String descricao, LocalDate dataVencimento, String prioridade) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.concluido = false;
         this.dataVencimento = dataVencimento;
+        this.prioridade = prioridade;
     }
 
     public LocalDate getDataVencimento() {
@@ -28,6 +30,10 @@ public class Tarefa implements Comparable<Tarefa> {
 
     public String getDescricao() {
         return descricao;
+    }
+
+    public String getPrioridade() {
+        return prioridade;
     }
 
     public void marcarConcluido() {
@@ -47,6 +53,11 @@ public class Tarefa implements Comparable<Tarefa> {
 
     @Override
     public int compareTo(Tarefa outra) {
-        return this.dataVencimento.compareTo(outra.dataVencimento);
+        int prioridadeComparacao = this.prioridade.compareTo(outra.prioridade);
+        if (prioridadeComparacao == 0) {
+            return this.dataVencimento.compareTo(outra.dataVencimento);
+        }
+        return prioridadeComparacao;
     }
+
 }
