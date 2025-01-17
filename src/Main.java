@@ -221,13 +221,6 @@ public class Main {
         }
     }
 
-    // Adicionada funcionalidade para cadastrar receitas
-    public static Receita adicionarReceita(Scanner scanner, int idAtual) {
-        System.out.println("--- Adicionar Receita ---");
-
-
-        return null;
-    }
 }
 
 
