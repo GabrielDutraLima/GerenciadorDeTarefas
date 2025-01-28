@@ -1,26 +1,21 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
-import java.io.FileWriter;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in); // Ler as entradas do usuário
-        ArrayList<Tarefa> tarefas = new ArrayList<>();
-        carregarTarefas(tarefas);
+    public static void main(String[] args) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Tarefa> tarefas = TarefaDAO.carregarTarefas(); // Agora carrega do MySQL
         Collections.sort(tarefas);
         int opcao = -1;
 
-        while (opcao !=0 ) {
+        while (opcao != 0) {
             exibirMenu();
             opcao = scanner.nextInt();
-            scanner.nextLine(); // Consumi o enter extra
+            scanner.nextLine(); // Consome o enter extra
 
             switch (opcao) {
                 case 1 -> adicionarTarefa(scanner, tarefas);
@@ -28,66 +23,11 @@ public class Main {
                 case 3 -> removerTarefa(scanner, tarefas);
                 case 4 -> marcarComoConcluida(scanner, tarefas);
                 case 5 -> filtrarTarefas(scanner, tarefas);
-                case 0 -> {
-                    salvarTarefas(tarefas);
-                    System.out.println("--- Saindo do Gerenciador de Tarefas ---");
-                }
+                case 0 -> System.out.println("--- Saindo do Gerenciador de Tarefas ---");
                 default -> System.out.println("Opção inválida!!");
             }
-
         }
         scanner.close();
-
-        }
-
-    public static void salvarTarefas(ArrayList<Tarefa> tarefas) {
-        try (FileWriter writer = new FileWriter("tarefas.txt")) {
-            for (Tarefa tarefa : tarefas) {
-                writer.write(tarefa.getTitulo() + ";" + tarefa.getDescricao() + ";" +
-                        tarefa.isConcluido() + ";" + tarefa.getDataVencimento() + ";" +
-                        tarefa.getPrioridade() + "\n");
-            }
-            System.out.println("Tarefas salvas com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar tarefas: " + e.getMessage());
-        }
-    }
-
-    public static void carregarTarefas(ArrayList<Tarefa> tarefas) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("tarefas.txt"))) {
-            String linha;
-            while ((linha = reader.readLine()) != null) {
-                String[] partes = linha.split(";");
-
-                if (partes.length < 5) {
-                    System.out.println("Linha inválida no arquivo: " + linha);
-                    continue;
-                }
-
-                String titulo = partes[0];
-                String descricao = partes[1];
-                boolean concluida = Boolean.parseBoolean(partes[2]);
-                LocalDate dataVencimento;
-                String prioridade = partes[4];
-
-                try {
-                    // Converte a parte 3 para LocalDate
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    dataVencimento = LocalDate.parse(partes[3], formatter);
-                } catch (Exception e) {
-                    System.out.println("Erro ao ler a data de Vencimento: " + partes[3]);
-                    continue; // Ignora esta linha e continua para a proxima
-                }
-                Tarefa tarefa = new Tarefa(titulo, descricao, dataVencimento, prioridade);
-                if (concluida) {
-                    tarefa.marcarConcluido();
-                }
-                tarefas.add(tarefa);
-            }
-            System.out.println("Tarefa carregadas com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Erro ao carregar tarefas: " + e.getMessage());
-        }
     }
 
     public static void exibirMenu() {
@@ -102,19 +42,18 @@ public class Main {
     }
 
     public static void adicionarTarefa(Scanner scanner, ArrayList<Tarefa> tarefas) {
-        System.out.println("--- Digite o Titulo da tarefa: ---");
+        System.out.println("--- Digite o Título da tarefa: ---");
         String titulo = scanner.nextLine();
 
-        System.out.println("Escolha a prioridade da tarefa (baixa, média, alta): )");
+        System.out.println("Escolha a prioridade da tarefa (baixa, média, alta): ");
         String prioridade = scanner.nextLine().toLowerCase();
         if (!prioridade.equals("baixa") && !prioridade.equals("média") && !prioridade.equals("alta")) {
-            System.out.println("Prioridade inválida. Tafera não foi criada.");
+            System.out.println("Prioridade inválida. Tarefa não foi criada.");
             return;
         }
 
         System.out.println("Digite a descrição da tarefa: ");
         String descricao = scanner.nextLine();
-
 
         System.out.println("Digite a data de vencimento (dd/MM/yyyy): ");
         String dataEntrada = scanner.nextLine();
@@ -123,9 +62,9 @@ public class Main {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             dataVencimento = LocalDate.parse(dataEntrada, formatter);
-            Tarefa novaTarefa = new Tarefa(titulo, descricao, dataVencimento, prioridade);
-            tarefas.add(novaTarefa);
-            System.out.println("Tarefa Adicionada!");
+            Tarefa novaTarefa = new Tarefa(0, titulo, descricao, dataVencimento, prioridade);
+            TarefaDAO.salvarTarefa(novaTarefa); // Agora salva no banco
+            System.out.println("Tarefa adicionada com sucesso!");
         } catch (Exception e) {
             System.out.println("Data inválida! A tarefa não foi salva.");
         }
@@ -133,73 +72,55 @@ public class Main {
 
     public static void listarTarefas(ArrayList<Tarefa> tarefas) {
         System.out.println("\n--- Listando Tarefas! ---");
+        tarefas = TarefaDAO.carregarTarefas(); // Atualiza a lista com os dados do banco
         if (tarefas.isEmpty()) {
             System.out.println("Nenhuma tarefa registrada.");
         } else {
-            Collections.sort(tarefas);
-            for (int i = 0; i < tarefas.size(); i++) {
-                System.out.println((i + 1) + ". " + tarefas.get(i));
+            for (Tarefa tarefa : tarefas) {
+                System.out.println("ID: " + tarefa.getId() + " | " + tarefa);
             }
         }
     }
+
 
     public static void removerTarefa(Scanner scanner, ArrayList<Tarefa> tarefas) {
         System.out.println("\n--- Remover Tarefa! ---");
-        if (tarefas.isEmpty()) {
-            System.out.println("Nenhuma tarefa para remover.");
-        } else {  // Exibe as tarefas
-            System.out.println("Tarefas disponiveis: ");
-            for (int i = 0; i < tarefas.size(); i++) {
-                System.out.println((i + 1));
-            }
+        listarTarefas(tarefas);
+        System.out.println("Digite o ID da tarefa que deseja remover: ");
+        int id = scanner.nextInt();
 
-            // Solicita o numero de tarefas
-            System.out.println("Digite o numero da tarefa que deseja remover: ");
-            int numero = scanner.nextInt();
-
-            // valida a entrada do usuario
-            if (numero > 0 && numero <= tarefas.size()) {
-                tarefas.remove(numero - 1); // Remove a tarefa
-                System.out.println("Tarefa removida!!");
-
-            } else {
-                System.out.println("Numero Invalido !!");
-            }
-        }
+        TarefaDAO.excluirTarefa(id); // Remove do banco
+        System.out.println("Tarefa removida!");
     }
 
-    public static void marcarComoConcluida(Scanner scanner, ArrayList<Tarefa> tarefas) {
-        System.out.println("--- Marcar Tarefa como Concluida ---");
-        if (tarefas.isEmpty()) {
-            System.out.println("Tarefa não encontrada");
+    public static void marcarComoConcluida(Scanner scanner, ArrayList<Tarefa> tarefas) throws SQLException {
+        System.out.println("--- Marcar Tarefa como Concluída ---");
+        listarTarefas(tarefas);
+        System.out.println("Digite o ID da tarefa que deseja marcar como concluída: ");
+        int id = scanner.nextInt();
+
+        Tarefa tarefa = TarefaDAO.buscarTarefaPorId(id); // Buscando diretamente no banco
+
+        if (tarefa != null) {
+            tarefa.marcarConcluido();
+            TarefaDAO.atualizarTarefa(tarefa); // Atualiza no banco
+            System.out.println("✅ Tarefa marcada como concluída!");
         } else {
-            System.out.println("Tarefas disponiveis:");
-            for (int i = 0; i < tarefas.size(); i++) {
-                System.out.println((i + 1) + ". " + tarefas.get(i));
-
-            }
-
-            System.out.println("Escolha a tarefa para marcar como conclida: ");
-            int numero = scanner.nextInt();
-
-            if (numero > 0 && numero <= tarefas.size()) {
-                tarefas.get(numero - 1).marcarConcluido();
-                System.out.println("Tarefa Concluída!");
-            } else {
-                System.out.println("Numero inválido. Por favor, tente novamente.");
-
-            }
+            System.out.println("❌ ID inválido. Nenhuma tarefa foi encontrada.");
         }
     }
+
 
     public static void filtrarTarefas(Scanner scanner, ArrayList<Tarefa> tarefas) {
         System.out.println("\n--- Filtrar Tarefas ---");
         System.out.println("1. Mostrar apenas tarefas pendentes");
-        System.out.println("2. Mostrar apenas tarefas concluidas");
+        System.out.println("2. Mostrar apenas tarefas concluídas");
         System.out.print("Escolha uma opção: ");
 
         int filtro = scanner.nextInt();
-        scanner.nextLine(); // usado para consumir a quebra de linha
+        scanner.nextLine();
+
+        tarefas = TarefaDAO.carregarTarefas();
 
         if (filtro == 1) {
             System.out.println("\n--- Tarefas Pendentes ---");
@@ -215,25 +136,8 @@ public class Main {
                     System.out.println(tarefa);
                 }
             }
-
         } else {
             System.out.println("Opção inválida!");
         }
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

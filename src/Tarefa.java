@@ -7,14 +7,23 @@ public class Tarefa implements Comparable<Tarefa> {
     private boolean concluido;
     private LocalDate dataVencimento;
     private String prioridade;
-
+    private int id;
     // contrutor
-    public Tarefa(String titulo, String descricao, LocalDate dataVencimento, String prioridade) {
+    public Tarefa(int id ,String titulo, String descricao, LocalDate dataVencimento, String prioridade) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.concluido = false;
         this.dataVencimento = dataVencimento;
         this.prioridade = prioridade;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int anInt) {
+        this.id = id;
     }
 
     public LocalDate getDataVencimento() {
